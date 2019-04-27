@@ -1,0 +1,132 @@
+library (ggplot2)
+library(dataQualityR)
+library(Hmisc)
+library(reshape2)
+
+url<-"https://raw.githubusercontent.com/jcbonilla/BusinessAnalytics/master/BAData/Progresso_Soup.csv"
+data<-read.csv(url)
+View(data)
+
+str(data)
+summary(data)
+var(data$Price.Campbell)
+var(data$Price.PL)
+var(data$Price.Progresso)
+
+#Change the data type for Month to a factor variable
+data$Month <- factor(data$Month)
+
+#Or create a new factor variable 
+# and assign it values that spell out the movies types in the dataset.
+monthnames<-factor(data$Month, levels=1:12, labels=c("Jan", "Feb", "Mar", "Apr","May","Jun","Jul","Aug","Sept","Oct","Nov","Dec"))
+data$Month <- monthnames
+
+#Make a dummy
+data$Jan <- as.logical(0)
+data$Feb <- as.logical(0)
+data$Oct <- as.logical(0)
+data$Nov <- as.logical(0)
+data$Dec <- as.logical(0)
+data$NotWinter <- as.logical(0)
+
+for (i in 1:nrow(data)){
+  if (data$Month[i]=="Jan")
+    data$Jan[i]<-as.logical(1)
+  else if (data$Month[i]=="Feb")
+    data$Feb[i]<-as.logical(1)
+  else if (data$Month[i]=="Oct")
+    data$Oct[i]<-as.logical(1)
+  else if (data$Month[i]=="Nov")
+    data$Nov[i]<-as.logical(1)
+  else if (data$Month[i]=="Dec")
+    data$Dec[i]<-as.logical(1)
+  else data$NotWinter[i]<-as.logical(1)
+}
+
+data$winter<- (data$Jan + data$Feb + data$Oct + data$Nov + data$Dec)
+
+# Plot the distribution of winter by type in our data
+ggplot(data=data, aes(x=Month)) + 
+  geom_bar(alpha = 0.6, fill = "blue") + theme_bw() +
+  theme(axis.title.x = element_text(face="bold", vjust=-0.5, size=14),
+        axis.text.x  = element_text(size=14),
+        axis.title.y = element_text(face="bold", vjust=1, size=14),
+        axis.text.y  = element_text(size=14)) + 
+  labs(x= "Month", y = "Sales")
+
+# Plot month against Sales of Progresso is released at
+ggplot(data=data, aes(x=data$Month, y=data$Sales.Progresso)) + 
+  geom_point(alpha = 0.6, colour="blue", size=3) + theme_bw() +
+  theme(axis.title.x = element_text(face="bold", vjust=-0.5, size=14),
+        axis.text.x  = element_text(size=14),
+        axis.title.y = element_text(face="bold", vjust=1, size=14),
+        axis.text.y  = element_text(size=14)) + 
+  labs(x= "Month", y = "Sales")
+
+# Plot winter against the Sales of Progresso is released at
+ggplot(data=data, aes(x=data$winter, y=data$Sales.Progresso)) + 
+geom_point(alpha = 0.6, colour="red", size=3) + theme_bw() +
+theme(axis.title.x = element_text(face="bold", vjust=-0.5, size=14),
+axis.text.x  = element_text(size=14),
+axis.title.y = element_text(face="bold", vjust=1, size=14),
+axis.text.y  = element_text(size=14)) + 
+labs(x= "Winter", y = "Sales")
+
+# Plot Summer against the Sales of Progresso is released at
+ggplot(data=data, aes(x=data$NotWinter, y=data$Sales.Progresso)) + 
+  geom_point(alpha = 0.6, colour="purple", size=3) + theme_bw() +
+  theme(axis.title.x = element_text(face="bold", vjust=-0.5, size=14),
+        axis.text.x  = element_text(size=14),
+        axis.title.y = element_text(face="bold", vjust=1, size=14),
+        axis.text.y  = element_text(size=14)) + 
+  labs(x= "Not Winter", y = "Sales")
+
+#Correlation between Price and Sales
+x<-data$Price.Progresso
+y<-data$Sales.Progresso
+plot(x,y,main="Scatter",xlab="Price ",ylab="Sales")
+cor(data$Price.Progresso,data$Sales.Progresso)
+
+# Plot Region against the Sales of Progresso is released at
+ggplot(data=data, aes(x=data$Region, y=data$Sales.Progresso)) + 
+  geom_point(alpha = 0.6, colour="orange", size=3) + theme_bw() +
+  theme(axis.title.x = element_text(face="bold", vjust=-0.5, size=14),
+        axis.text.x  = element_text(size=14),
+        axis.title.y = element_text(face="bold", vjust=1, size=14),
+        axis.text.y  = element_text(size=14)) + 
+  labs(x= "Region", y = "Sales")
+
+table(data$winter)
+saleswinter<-(24758/59100)*100
+saleswinter
+
+salesnonwinter<-100- saleswinter
+salesnonwinter
+
+
+####Q2
+
+################# 2  #############
+
+model1<- lm(Sales.Progresso ~ Region + NotWinter + Price.Progresso,data=data)
+summary(model1)  
+
+
+model2<- lm(Sales.Progresso ~ Region + Jan + Feb + Oct + Nov + Dec + Price.Progresso, data=data)
+summary(model2) 
+
+
+model3<- lm(Sales.Progresso ~.,data=data)
+summary(model3)
+
+model4<- lm(Sales.Progresso~ IRI_KEY + Month + Region + High_Income + Price.Campbell + Price.PL + Price.Progresso + Sales.Progresso+ Category_Sales+ Jan + Feb + Oct + Nov + Dec + NotWinter + winter, data=data)
+summary(model4)
+totalsales<-sum(data$Category_Sales)
+
+winter<-subset(data,winter == "1")
+market_winter<-(sum(winter$Sales.Progresso)/totalsales)*100
+market_winter
+
+NotWinterdata<-subset(data,NotWinter == "TRUE")
+market_notwinter<-(sum(NotWinterdata$Sales.Progresso)/totalsales)*100
+market_notwinter
