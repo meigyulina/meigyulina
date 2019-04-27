@@ -1,0 +1,34 @@
+getwd()
+setwd("/Users/meigysaviraulina/Downloads")
+getwd()
+data<- read.csv("/Users/meigysaviraulina/Downloads/occupation.csv", header=TRUE,stringsAsFactors=FALSE)
+data.2<- read.csv("/Users/meigysaviraulina/Downloads/states.csv", header=TRUE,stringsAsFactors=FALSE)
+data
+data.2
+
+summary(data$Median.annual.wage..2017.1.)
+median(data$Median.annual.wage..2017.1.)
+
+
+df3<-data.frame(name = rep(data.2$X,times = 2),
+                y = c(data.2$Percent.bachelor.s.degree.or.higher))
+
+library(ggplot2)
+ggplot(data=data.2, aes(x=data.2$X, y=data.2$Percent.Bachelor.s.Degree.or.Higher)) + geom_line(colour="red") + geom_point(colour="red", size=4, shape=21, fill="white", main="Percent Bachelor Degree & Higher and Technology Rank")
+
+
+help(order)
+data2order<-order(data.2$Percent.high.school.graduate.or.highe,decreasing = FALSE)
+data2order<-data.2[ order(data.2$Percent.Bachelor.s.Degree.or.Higher , decreasing = FALSE ),]
+tentop<-data.frame(data2order$Percent.Bachelor.s.Degree.or.Higher[1:10])
+
+dataprof<-subset(data,Typical.education.needed.for.entry=="Doctoral or professional degree")
+dataprof
+
+profordoctor<-table(dataprof$X2016.National.Employment.Matrix.title.and.code,dataprof$Median.annual.wage..2017.1.)
+pd_df<-data.frame(profordoctor)
+help("barplot")
+
+data.3<-data.frame(data.2$Percent.Bachelor.s.Degree.or.Higher,data.2$Technology.Rank)
+data.3
+cor(data.3)
