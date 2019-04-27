@@ -1,0 +1,60 @@
+getwd()
+setwd("/Users/meigysaviraulina/Downloads")
+getwd()
+data<- read.csv("/Users/meigysaviraulina/Downloads/RIV Users.csv", header=TRUE,stringsAsFactors=FALSE)
+
+install.packages("arules")
+library(arules)
+groceries <- read.transactions("https://raw.githubusercontent.com/jcbonilla/BusinessAnalytics/master/BAData/groceries-vertical.csv", sep = ",")
+summary(groceries)
+inspect(groceries[1:5])
+itemFrequency(groceries[, 1:3])
+itemFrequencyPlot(groceries, topN = 5,col="dark blue",xlab = 'Products',ylab = 'Frequency',main="Percent Bachelor Degree & Higher and Technology Rank")
+groceryrules <- apriori(groceries, parameter = list(support =
+                                                      0.006, confidence = 0.25, minlen = 2))
+summary(groceryrules)
+inspect(groceryrules[1:3])
+inspect(sort(groceryrules, by = "lift")[1:5])
+berryrules <- subset(groceryrules, items %in% "whole milk")
+inspect(berryrules)
+write(groceryrules, file = "groceryrules.csv",
+      sep = ",", quote = TRUE, row.names = FALSE)
+groceryrules_df <- as(groceryrules, "data.frame")
+str(groceryrules_df)
+rules <- apriori(groceries, parameter = list(supp = 0.001, conf = 0.8))
+
+rules<-apriori(data=groceries, parameter=list(supp=0.001,conf = 0.15,minlen=2),
+               appearance = list(default="rhs",lhs="rolls/buns"),
+               control = list(verbose=F))
+rules<-sort(rules, decreasing=TRUE,by="confidence")
+inspect(rules[1:5])
+
+rules<-apriori(data=groceries, parameter=list(supp=0.001,conf = 0.15,minlen=2),
+               appearance = list(default="rhs",lhs="whole milk"),
+               control = list(verbose=F))
+rules<-sort(rules, decreasing=TRUE,by="confidence")
+inspect(rules[1:5])
+
+rules<-apriori(data=groceries, parameter=list(supp=0.03,conf = 0.2),
+               appearance = list(default="lhs",rhs="other vegetables"),
+               control = list(verbose=F))
+rules<-sort(rules, decreasing=TRUE,by="confidence")
+inspect(rules[1:5])
+
+rules<-apriori(data=groceries, parameter=list(supp=0.02,conf = 0.2),
+               appearance = list(default="lhs",rhs="soda"),
+               control = list(verbose=F))
+rules<-sort(rules, decreasing=TRUE,by="confidence")
+inspect(rules[1:5])
+
+rules<-apriori(data=groceries, parameter=list(supp=0.02,conf = 0.2),
+               appearance = list(default="lhs",rhs="yogurt"),
+               control = list(verbose=F))
+rules<-sort(rules, decreasing=TRUE,by="confidence")
+inspect(rules[1:5])
+
+library(arulesViz)
+
+plot(rules, method="graph", control=list(type="items"), main="Yogurt Complements")
+
+help(plot)
