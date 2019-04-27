@@ -1,0 +1,60 @@
+url<-"https://raw.githubusercontent.com/jcbonilla/BusinessAnalytics/master/BAData/car-data.csv"
+mydata<-read.csv(url)
+
+library(rpart) #load the rpart package
+library(rpart.plot) #package to visualize decision trees
+library(dplyr)
+install.packages("dataQualityR")
+library(dataQualityR)
+install.packages("ROSE")
+library(ROSE)
+install.packagaes("pROC")
+library(pROC)
+install.packages("caret")
+library(caret)
+install.packages("e1071")
+library(e1071)
+
+#split
+set.seed(1000)
+split<-(.8)
+trainingRowIndex <- sample(1:nrow(mydata),(split)*nrow(mydata))  # row indices for training data
+trainingData <- mydata[trainingRowIndex, ]  # model training data
+testData  <- mydata[-trainingRowIndex, ]   # test data
+
+#model
+model1<-rpart(Car.Acceptability ~., 
+              data = trainingData, method = "class")
+model1
+printcp(model1)
+rpart.plot(model1)
+
+##prediction
+prediction<-predict(model1,testData,type="class")
+prediction
+
+conf.table <- data.frame(actual= testData$Car.Acceptability, Prediction = prediction)
+table(conf.table)
+
+##accuracy
+printcp(model1)  # print the cptable
+mean(testData$Car.Acceptability != prediction)    # % misclassification error 
+summary(model1)
+
+a<-confusionMatrix(prediction,testData[,7])
+print(a)
+
+precision_num<-(104)/(104+6)
+precision_num
+recall<-(104)/(104+5)
+recall
+F_score<-2*((0.95*0.95)/(0.95+0.95))
+F_score
+G_score<-sqrt(0.95*0.95)
+G_score
+
+prediction.prob <- predict(model1, testData, type = "prob") 
+plot(roc(testData$Car.Acceptability,prediction.prob[,2])) 
+auc(testData$Car.Acceptability,prediction.prob[,2]) 
+auc(testData$Car.Acceptability,prediction.prob[,2])
+
