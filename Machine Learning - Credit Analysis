@@ -1,0 +1,413 @@
+For Model with Application_train
+
+#clean the application_train
+data <- read.csv("/Users/apple/Desktop/application_train.csv")
+newdata<- data[,c(2,3,4,5,6,8:11,14,15,17:22,24,25,27,29,30,32,35:38,42:44,72,80,81,84,86,90,95,96,97,98, 100,101,103,104,106,108:113,116,118,120,122)]
+summary(newdata)
+newdata$AMT_ANNUITY[is.na(newdata$AMT_ANNUITY)]<- 24917 newdata$AMT_GOODS_PRICE[is.na(newdata$AMT_GOODS_PRICE)]<- 450000 newdata$OWN_CAR_AGE[is.na(newdata$OWN_CAR_AGE)]<- 9 newdata$CNT_FAM_MEMBERS[is.na(newdata$CNT_FAM_MEMBERS)]<- 2.000 newdata$EXT_SOURCE_1[is.na(newdata$EXT_SOURCE_1)]<- 0.51 newdata$EXT_SOURCE_2[is.na(newdata$EXT_SOURCE_2)]<- 0.5661 newdata$EXT_SOURCE_3[is.na(newdata$EXT_SOURCE_3)]<- 0.54 newdata$AMT_REQ_CREDIT_BUREAU_YEAR[is.na(newdata$AMT_REQ_CREDIT_BUREAU_YEA R)]<-1.0 newdata$AMT_REQ_CREDIT_BUREAU_MON[is.na(newdata$AMT_REQ_CREDIT_BUREAU_MO N)]<-0 newdata$AMT_REQ_CREDIT_BUREAU_DAY[is.na(newdata$AMT_REQ_CREDIT_BUREAU_DAY) ]<-0 newdata$DAYS_LAST_PHONE_CHANGE[is.na(newdata$DAYS_LAST_PHONE_CHANGE)]<-- 757.0 newdata$DEF_60_CNT_SOCIAL_CIRCLE[is.na(newdata$DEF_60_CNT_SOCIAL_CIRCLE)]<-0 newdata$NONLIVINGAREA_MEDI[is.na(newdata$NONLIVINGAREA_MEDI)]<-0 newdata$LIVINGAREA_MEDI[is.na(newdata$LIVINGAREA_MEDI)]<-0.07 newdata$FLOORSMIN_MEDI[is.na(newdata$FLOORSMIN_MEDI)]<-0.21 newdata$FLOORSMAX_MEDI[is.na(newdata$FLOORSMAX_MEDI)]<-0.17 newdata$NONLIVINGAREA_MODE[is.na(newdata$NONLIVINGAREA_MODE)]<-0 newdata$OCCUPATION_TYPE[newdata$OCCUPATION_TYPE==""]<-"Not Available" newdata$WALLSMATERIAL_MODE[newdata$WALLSMATERIAL_MODE==""]<-"Not Available"
+newdata$TARGET<-factor(newdata$TARGET)
+summary(newdata)
+#split the dataset
+newdata<-read.csv(file = "C:\\Users\\yd138\\Desktop\\NYU\\2019 Spring\\Bussiness Analytics\\Project2\\app_train.csv",header=TRUE,stringsAsFactors=TRUE)
+library(dplyr)
+newdata=newdata %>% mutate_if(is.character, as.factor) newdata$TARGET<-factor(newdata$TARGET) summary(newdata)
+str(newdata)
+prop.table(table(newdata$TARGET))
+library(caTools)
+set.seed(1234)
+split = sample.split(newdata$TARGET, SplitRatio = 2/3) train = subset(newdata, split==TRUE)
+test = subset(newdata, split==FALSE)
+#clean the scoring data
+scoringdata$TARGET<-predict(rf, test, type='response')
+scoringdata<-read.csv(file = "C:\\Users\\yd138\\Desktop\\NYU\\2019 Spring\\Bussiness Analytics\\Project2\\scoringdata.csv",header=TRUE,stringsAsFactors=TRUE) scoringdata$AMT_ANNUITY[is.na(scoringdata$AMT_ANNUITY)]<- 27128 scoringdata$AMT_GOODS_PRICE[is.na(scoringdata$AMT_GOODS_PRICE)]<- 536716 scoringdata$EXT_SOURCE_1[is.na(scoringdata$EXT_SOURCE_1)]<- 0.5 scoringdata$OWN_CAR_AGE[is.na(scoringdata$OWN_CAR_AGE)]<- 12.07 scoringdata$EXT_SOURCE_2[is.na(scoringdata$EXT_SOURCE_2)]<- 0.5139 scoringdata$EXT_SOURCE_3[is.na(scoringdata$EXT_SOURCE_3)]<- 0.509 scoringdata$NONLIVINGAREA_MODE[is.na(scoringdata$NONLIVINGAREA_MODE)]<- 0.03 scoringdata$FLOORSMAX_MEDI[is.na(scoringdata$AMT_ANNUITY)]<- 0.226 scoringdata$FLOORSMIN_MEDI[is.na(scoringdata$FLOORSMIN_MEDI)]<- 0.23 scoringdata$LIVINGAREA_MEDI[is.na(scoringdata$LIVINGAREA_MEDI)]<- 0.109 scoringdata$NONLIVINGAREA_MEDI[is.na(scoringdata$NONLIVINGAREA_MEDI)]<- 0.03 scoringdata$DEF_60_CNT_SOCIAL_CIRCLE[is.na(scoringdata$DEF_60_CNT_SOCIAL_CIRCLE)] <- 0.09984 scoringdata$AMT_REQ_CREDIT_BUREAU_DAY[is.na(scoringdata$AMT_REQ_CREDIT_BUREA U_DAY)]<- 0.007 scoringdata$AMT_REQ_CREDIT_BUREAU_MON[is.na(scoringdata$AMT_REQ_CREDIT_BUREA U_MON)]<- 0.272 scoringdata$AMT_REQ_CREDIT_BUREAU_YEAR[is.na(scoringdata$AMT_REQ_CREDIT_BUREA U_YEAR)]<- 1.895 scoringdata$FLOORSMAX_MEDI[is.na(scoringdata$FLOORSMAX_MEDI)]<- 0.226 summary(scoringdata)
+scoringdata=scoringdata %>% mutate_if(is.character, as.factor) scoringdata$OCCUPATION_TYPE[scoringdata$OCCUPATION_TYPE==""]<-"Not Available" scoringdata$WALLSMATERIAL_MODE[scoringdata$WALLSMATERIAL_MODE==""]<-"Not Available"
+write.csv(scoringdata, file="C:\\Users\\yd138\\Desktop\\NYU\\2019 Spring\\Bussiness
+
+Analytics\\Project2\\scoringdata2.csv")
+#1 solve the umbalance with over
+library(ROSE)
+train.over<-ovun.sample(TARGET~., data = train, method = "over")$data prop.table(table(train.over$TARGET))
+set.seed(100)
+split2<-(.5)
+trainingRowIndex <- sample(1:nrow(train.over),(split2)*nrow(train.over))
+trainingData <- train.over[trainingRowIndex, ]
+prop.table(table(trainingData$TARGET))
+#establish the rf_over with 10% and 50% of train over data
+library(randomForest)
+rf = randomForest(TARGET~., data = trainingData,importance=T)
+prediction<-predict(rf, test, type='response')
+memory.limit(1000000)
+rf_0.5= randomForest(TARGET~., data = trainingData,importance=T) prediction2<-predict(rf_0.5, test, type='response')
+library(caret)
+confusionMatrix(prediction, test$TARGET,positive = "1", mode="everything") confusionMatrix(prediction2, test$TARGET,positive = "1", mode="everything")
+#predict the scoring with 10% and 50% of train over data
+scoringdata<-read.csv(file = "C:\\Users\\yd138\\Desktop\\NYU\\2019 Spring\\Bussiness Analytics\\Project2\\scoringdata.csv",header=TRUE,stringsAsFactors=FALSE) scoringdata=scoringdata %>% mutate_if(is.character, as.factor) scoringdata$TARGET<-factor(scoringdata$TARGET)
+pre_scoring1<-predict(rf, scoringdata, type='response')
+pre_scoring2<-predict(rf_0.5, scoringdata, type='response')
+table(pre_scoring2)
+data1<-read.csv(file = "C:\\Users\\yd138\\Desktop\\NYU\\2019 Analytics\\Project2\\new_records_for_scoring.csv",header=TRUE,stringsAsFactors=FALSE) sample_submission_rfover0.1<- data.frame(SK_ID_CURR=data1$SK_ID_CURR,TARGET=pre_scoring1) sample_submission_rfover0.5<- data.frame(SK_ID_CURR=data1$SK_ID_CURR,TARGET=pre_scoring2) write.csv(sample_submission_rfover0.1, file="C:\\Users\\yd138\\Desktop\\NYU\\2019 Spring\\Bussiness Analytics\\Project2\\sample_submission_rfover0.1.csv") write.csv(sample_submission_rfover0.5, file="C:\\Users\\yd138\\Desktop\\NYU\\2019 Spring\\Bussiness Analytics\\Project2\\sample_submission_rfover0.5.csv")
+Spring\\Bussiness
+
+#2 solve the umbalance with both
+library(ROSE)
+train.both<-ovun.sample(TARGET~., data = train, method = "both")$data prop.table(table(train.both$TARGET))
+#establish the rf_both with train_both data
+library(randomForest)
+rf = randomForest(TARGET~., data = train.both,importance=T)
+prediction<-predict(rf, test, type='response')
+memory.limit(1000000)
+library(caret)
+confusionMatrix(prediction, test$TARGET,positive = "1", mode="everything")
+#predict the scoring with train_both data
+scoringdata<-read.csv(file = "C:\\Users\\yd138\\Desktop\\NYU\\2019 Spring\\Bussiness Analytics\\Project2\\scoringdata.csv",header=TRUE,stringsAsFactors=FALSE) scoringdata=scoringdata %>% mutate_if(is.character, as.factor) scoringdata$TARGET<-factor(scoringdata$TARGET)
+pre_scoring<-predict(rf, scoringdata, type='response')
+table(pre_scoring2)
+data1<-read.csv(file = "C:\\Users\\yd138\\Desktop\\NYU\\2019 Spring\\Bussiness Analytics\\Project2\\new_records_for_scoring.csv",header=TRUE,stringsAsFactors=FALSE) sample_submission_rfboth<- data.frame(SK_ID_CURR=data1$SK_ID_CURR,TARGET=pre_scoring) write.csv(sample_submission_rfboth, file="C:\\Users\\yd138\\Desktop\\NYU\\2019 Spring\\Bussiness Analytics\\Project2\\sample_submission_rfboth.csv")
+#3 solve the umbalance with under
+library(ROSE)
+train.under<-ovun.sample(TARGET~., data = train, method = "under")$data prop.table(table(train.under$TARGET))
+#establish the rf_under with train_under data
+library(randomForest)
+rf = randomForest(TARGET~., data = train.under,importance=T) prediction<-predict(rf, test, type='response')
+memory.limit(1000000)
+library(caret)
+confusionMatrix(prediction, test$TARGET,positive = "1", mode="everything")
+
+#try to tune the rf model of re_over_10%data
+split2<-(.1)
+trainingRowIndex <- sample(1:nrow(train.over),(split2)*nrow(train.over)) trainingData <- train.over[trainingRowIndex, ] prop.table(table(trainingData$TARGET))
+n <- length(names(trainingData))
+set.seed(1234)
+errRate <- c(1)
+for (i in 1:(n-1)){
+model <- randomForest(TARGET~., data = trainingData, mtry = i) err <- mean(model$err.rate)
+errRate[i] <- err
+}
+m= which.min(errRate)
+print(m)
+set.seed(1234)
+rf_ntree <- randomForest(TARGET~., data = trainingData, mtry = 6 ,ntree=5000) plot(rf_ntree)
+rf_0.1<- randomForest(TARGET~., data = trainingData, mtry = 6 ,ntree=2000) prediction_rf_0.1<-predict(rf_0.1, test, type='response') confusionMatrix(prediction_rf_0.1, test$TARGET,positive = "1", mode="everything") importance(rf_0.1)
+varImpPlot(rf_0.1)
+getwd()
+setwd(“/Users/meigysaviraulina/Downloads”)
+getwd()
+newdata<- read.csv(“/Users/meigysaviraulina/Downloads/app_train.csv”, header=TRUE,stringsAsFactors=FALSE)
+scoringdata <- read.csv(“/Users/meigysaviraulina/Downloads/scoringdata.csv”,header=TRUE,stringsAsFacto
+
+rs=TRUE) str(newdata)
+# review the “balance” of the positive class we are about to predict table(newdata$TARGET)
+prop.table(table(newdata$TARGET)) barplot(table(newdata$TARGET))
+### Selecting variables for modeling. A total of 12 variables with name updates library(dplyr)
+# MODELING. Let introduce some advance feature and best practices for replicability outcomeName <- ‘TARGET’
+predictorNames <- names(newdata)[names(newdata) != outcomeName] features
+#to be included in the model
+#Useful with long number of features
+# creating a list of
+newdata$TARGET<-as.factor(newdata$TARGET) newdata$NAME_CONTRACT_TYPE<-factor(newdata$NAME_CONTRACT_TYPE) newdata$CODE_GENDER<-factor(newdata$CODE_GENDER) newdata$FLAG_OWN_CAR<-factor(newdata$FLAG_OWN_CAR) newdata$FLAG_OWN_REALTY<-factor(newdata$FLAG_OWN_REALTY) newdata$NAME_EDUCATION_TYPE<-factor(newdata$NAME_EDUCATION_TYPE) newdata$NAME_FAMILY_STATUS<-factor(newdata$NAME_FAMILY_STATUS) newdata$OCCUPATION_TYPE<-factor(newdata$OCCUPATION_TYPE) newdata$WALLSMATERIAL_MODE<-factor(newdata$WALLSMATERIAL_MODE)
+set.seed(1234) # setting seed to reproduce results of random sampling
+split<-(.70)
+library (caret)
+index <- createDataPartition(newdata$TARGET, p=split, list=FALSE) # row indices for training data
+train.df <- newdata[ index,] # model training data test.df<-newdata[ -index,] # test data
+library(ROSE)
+train.both<-ovun.sample(TARGET~., data = train.df, method = “both”)$data prop.table(table(train.both$TARGET))
+
+# model setup
+names(getModelInfo()) #200+ ML algorithms
+modelLookup(model=‘gbm’)
+fitControl <- trainControl(method = “none”) # see help(trainControl) for details
+### RF Model
+# control parameters for training
+gbm<-train(train.both[,predictorNames],train.both[,outcomeName], method=‘gbm’,
+trControl=fitControl) # measuring performance
+gbm.predict<-predict(gbm,test.df[,predictorNames],type=“raw”) confusionMatrix(gbm.predict,test.df[,outcomeName])
+#Model tuning modelLookup(model=‘gbm’) help(“trainControl”)
+fitControl.gbm <- trainControl(method = “cv”, number = 20,
+sampling = “up”)
+# see help(trainControl) for details
+gbm.tuned<-train(train.df[,predictorNames],train.df[,outcomeName], #model retraining method=‘gbm’,
+trControl=fitControl.gbm)
+# measuring performance gbm.tuned.predict<-predict(gbm.tuned,test.df[,predictorNames],type=“raw”) confusionMatrix(gbm.tuned.predict,test.df[,outcomeName])
+gbm.tuned.probs <- predict(gbm.tuned,test.df[,predictorNames],type=“prob”) gbm.tuned.plot<-lines(roc(test.df$APPLICANT,gbm.tuned.probs[,2]), col=“red”) legend(“bottomright”, legend=c(“rf”, “gbm”, “gbm.tuned”), col=c(“blue”, “black”, “red”), lwd=2)
+# control parameters for training
+
+####GBM UNDER
+# review the “balance” of the positive class we are about to predict table(newdata$TARGET)
+prop.table(table(newdata$TARGET)) barplot(table(newdata$TARGET))
+### Selecting variables for modeling. A total of 12 variables with name updates library(dplyr)
+# MODELING. Let introduce some advance feature and best practices for replicability outcomeName2 <- ‘TARGET’
+predictorNames2 <- names(newdata)[names(newdata) != outcomeName2] of features
+#to be included in the model
+#Useful with long number of features
+# creating a list
+newdata$TARGET<-as.factor(newdata$TARGET) newdata$NAME_CONTRACT_TYPE<-factor(newdata$NAME_CONTRACT_TYPE) newdata$CODE_GENDER<-factor(newdata$CODE_GENDER) newdata$FLAG_OWN_CAR<-factor(newdata$FLAG_OWN_CAR) newdata$FLAG_OWN_REALTY<-factor(newdata$FLAG_OWN_REALTY) newdata$NAME_EDUCATION_TYPE<-factor(newdata$NAME_EDUCATION_TYPE) newdata$NAME_FAMILY_STATUS<-factor(newdata$NAME_FAMILY_STATUS) newdata$OCCUPATION_TYPE<-factor(newdata$OCCUPATION_TYPE) newdata$WALLSMATERIAL_MODE<-factor(newdata$WALLSMATERIAL_MODE)
+set.seed(1234) # setting seed to reproduce results of random sampling
+split<-(.70)
+library (caret)
+index <- createDataPartition(newdata$TARGET, p=split, list=FALSE) # row indices for training data
+train.df2 <- newdata[ index,] # model training data test.df2<-newdata[ -index,] # test data
+library(ROSE)
+train.under<-ovun.sample(TARGET~., data = train.df2, method = “under”)$data prop.table(table(train.under$TARGET))
+
+# model setup
+names(getModelInfo()) #200+ ML algorithms
+modelLookup(model=‘gbm’)
+fitControl2 <- trainControl(method = “none”) # see help(trainControl) for details
+### RF Model
+# control parameters for training
+gbm2<-train(train.under[,predictorNames],train.under[,outcomeName], method=‘gbm’,
+trControl=fitControl) # measuring performance
+gbm.predict2<-predict(gbm2,test.df2[,predictorNames],type=“raw”) confusionMatrix(gbm.predict2,test.df2[,outcomeName])
+#Model tuning modelLookup(model=‘gbm’) help(“trainControl”)
+fitControl.gbm <- trainControl(method = “cv”, number = 20,
+sampling = “up”)
+# see help(trainControl) for details
+gbm.tuned2<-train(train.under[,predictorNames],train.under[,outcomeName], retraining
+method=‘gbm’, trControl=fitControl.gbm)
+# measuring performance gbm.tuned.predict2<-predict(gbm.tuned2,test.df2[,predictorNames],type=“raw”) confusionMatrix(gbm.tuned.predict2,test.df2[,outcomeName])
+gbm.tuned.probs <- predict(gbm.tuned,test.df[,predictorNames],type=“prob”) gbm.tuned.plot<-lines(roc(test.df$APPLICANT,gbm.tuned.probs[,2]), col=“red”)
+# control parameters for training
+#model
+
+legend(“bottomright”, legend=c(“rf”, “gbm”, “gbm.tuned”), col=c(“blue”, “black”, “red”), lwd=2)
+actual2 = as.factor(test.df2$TARGET) gbm.predict2<-predict(gbm.tuned2,test.df2) confusionMatrix(test.df2$TARGET,gbm.predict2) recall2<-recall(gbm.predict2,actual2)
+precision2 = posPredValue(gbm.predict2, actual2) F.score2 = 2*((recall2*precision2)/(recall2+precision2)) G.score2 = sqrt(recall2*precision2)
+F.score2
+G.score2
+fitControl.gbm2 <- trainControl(method = “repeatedcv”, number = 20,
+repeats = 5, sampling = “up”)
+gbm2.tuned<-train(train.under[,predictorNames],train.under[,outcomeName], method=‘gbm’,
+trControl=fitControl.gbm2)
+fitControl.gbm3 <- trainControl(method = “repeatedcv”, number = 20,
+repeats = 10, sampling = “up”)
+gbm3.tuned<-train(train.under[,predictorNames],train.under[,outcomeName], method=‘gbm’,
+trControl=fitControl.gbm3)
+gbm.tuned.predict3<-predict(gbm3.tuned,test.df2[,predictorNames],type=“raw”) confusionMatrix(gbm.tuned.predict3,test.df2[,outcomeName])
+actual4 = as.factor(test.df2$TARGET) gbm.predict2<-predict(gbm2.tuned,test.df2) confusionMatrix(test.df2$TARGET,gbm.predict2) recall2<-recall(gbm.predict2,actual2)
+precision2 = posPredValue(gbm.predict2, actual2) F.score2 = 2*((recall2*precision2)/(recall2+precision2)) G.score2 = sqrt(recall2*precision2)
+F.score2
+
+G.score2
+####GBM OVER
+# review the “balance” of the positive class we are about to predict table(newdata$TARGET)
+prop.table(table(newdata$TARGET)) barplot(table(newdata$TARGET))
+### Selecting variables for modeling. A total of 12 variables with name updates library(dplyr)
+# MODELING. Let introduce some advance feature and best practices for replicability outcomeName3 <- ‘TARGET’
+predictorNames3 <- names(newdata)[names(newdata) != outcomeName3] of features
+#to be included in the model
+#Useful with long number of features
+# creating a list
+newdata$TARGET<-as.factor(newdata$TARGET) newdata$NAME_CONTRACT_TYPE<-factor(newdata$NAME_CONTRACT_TYPE) newdata$CODE_GENDER<-factor(newdata$CODE_GENDER) newdata$FLAG_OWN_CAR<-factor(newdata$FLAG_OWN_CAR) newdata$FLAG_OWN_REALTY<-factor(newdata$FLAG_OWN_REALTY) newdata$NAME_EDUCATION_TYPE<-factor(newdata$NAME_EDUCATION_TYPE) newdata$NAME_FAMILY_STATUS<-factor(newdata$NAME_FAMILY_STATUS) newdata$OCCUPATION_TYPE<-factor(newdata$OCCUPATION_TYPE) newdata$WALLSMATERIAL_MODE<-factor(newdata$WALLSMATERIAL_MODE)
+set.seed(1234) # setting seed to reproduce results of random sampling
+split<-(.70)
+library (caret)
+index <- createDataPartition(newdata$TARGET, p=split, list=FALSE) # row indices for training data
+train.df3 <- newdata[ index,] # model training data test.df3<-newdata[ -index,] # test data
+library(ROSE)
+
+train.over<-ovun.sample(TARGET~., data = train.df3, method = “over”)$data prop.table(table(train.under$TARGET))
+# model setup
+names(getModelInfo()) #200+ ML algorithms
+modelLookup(model=‘gbm’)
+fitControl3 <- trainControl(method = “none”) # see help(trainControl) for details
+### RF Model
+# control parameters for training
+gbm3<-train(train.over[,predictorNames],train.over[,outcomeName], method=‘gbm’,
+trControl=fitControl) # measuring performance
+gbm.predict3<-predict(gbm3,test.df3[,predictorNames],type=“raw”) confusionMatrix(gbm.predict3,test.df3[,outcomeName])
+#Model tuning modelLookup(model=‘gbm’) help(“trainControl”)
+fitControl.gbm <- trainControl(method = “cv”, number = 20,
+sampling = “up”)
+# see help(trainControl) for details
+gbm.tuned<-train(train.df[,predictorNames],train.df[,outcomeName], #model retraining method=‘gbm’,
+trControl=fitControl.gbm)
+# measuring performance gbm.tuned.predict<-predict(gbm.tuned,test.df[,predictorNames],type=“raw”) confusionMatrix(gbm.tuned.predict,test.df[,outcomeName])
+gbm.tuned.probs <- predict(gbm.tuned,test.df[,predictorNames],type=“prob”)
+# control parameters for training
+
+gbm.tuned.plot<-lines(roc(test.df$APPLICANT,gbm.tuned.probs[,2]), col=“red”) legend(“bottomright”, legend=c(“rf”, “gbm”, “gbm.tuned”), col=c(“blue”, “black”, “red”), lwd=2)
+actual = as.factor(test.df$TARGET) gbm.predict1<-predict(gbm,test.df) confusionMatrix(test.df$TARGET,gbm.predict1) recall<-recall(gbm.predict1,actual)
+precision = posPredValue(gbm.predict1, actual) F.score = 2*((recall*precision)/(recall+precision)) G.score = sqrt(recall*precision)
+F.score
+G.score
+actual2 = as.factor(test.df2$TARGET) gbm.predict2<-predict(gbm2,test.df2) confusionMatrix(test.df2$TARGET,gbm.predict2) recall2<-recall(gbm.predict2,actual2)
+precision2 = posPredValue(gbm.predict2, actual2) F.score2 = 2*((recall2*precision2)/(recall2+precision2)) G.score2 = sqrt(recall2*precision2)
+F.score2
+G.score2
+actual3 = as.factor(test.df3$TARGET) gbm.predict3<-predict(gbm3,test.df3) confusionMatrix(test.df3$TARGET,gbm.predict3) recall3<-recall(gbm.predict3,actual3)
+precision3 = posPredValue(gbm.predict3, actual3) F.score3 = 2*((recall3*precision3)/(recall3+precision3)) G.score3 = sqrt(recall3*precision3)
+F.score3
+G.score3
+
+For Model with 3 Files (Application_train, credit_card_balance, previous_application)
+#clean and join the data
+application_train <- read.csv("C:\\Users\\yd138\\Desktop\\NYU\\2019 Spring\\Bussiness Analytics\\Project2\\application_train.csv",,header = T, stringsAsFactors = T)
+app_train<- application_train[,c(1,2,3,4,5,6,8:11,14,15,17:22,24,25,27,29,30,32,35:38,42:44,72,80,81,84,86,9 0,95,96,97,98,100,101,103,104,106,108:113,116,118,120,122)] app_train$AMT_ANNUITY[is.na(app_train$AMT_ANNUITY)]<- 24917 app_train$AMT_GOODS_PRICE[is.na(app_train$AMT_GOODS_PRICE)]<- 450000 app_train$OWN_CAR_AGE[is.na(app_train$OWN_CAR_AGE)]<- 9 app_train$CNT_FAM_MEMBERS[is.na(app_train$CNT_FAM_MEMBERS)]<- 2.000 app_train$EXT_SOURCE_1[is.na(app_train$EXT_SOURCE_1)]<- 0.51 app_train$EXT_SOURCE_2[is.na(app_train$EXT_SOURCE_2)]<- 0.5661 app_train$EXT_SOURCE_3[is.na(app_train$EXT_SOURCE_3)]<- 0.54 app_train$AMT_REQ_CREDIT_BUREAU_YEAR[is.na(app_train$AMT_REQ_CREDIT_BUREAU_YE AR)]<-1.0 app_train$AMT_REQ_CREDIT_BUREAU_MON[is.na(app_train$AMT_REQ_CREDIT_BUREAU_M ON)]<-0 app_train$AMT_REQ_CREDIT_BUREAU_DAY[is.na(app_train$AMT_REQ_CREDIT_BUREAU_DA Y)]<-0 app_train$DAYS_LAST_PHONE_CHANGE[is.na(app_train$DAYS_LAST_PHONE_CHANGE)]<-- 757.0 app_train$DEF_60_CNT_SOCIAL_CIRCLE[is.na(app_train$DEF_60_CNT_SOCIAL_CIRCLE)]<-0 app_train$NONLIVINGAREA_MEDI[is.na(app_train$NONLIVINGAREA_MEDI)]<-0 app_train$LIVINGAREA_MEDI[is.na(app_train$LIVINGAREA_MEDI)]<-0.07 app_train$FLOORSMIN_MEDI[is.na(app_train$FLOORSMIN_MEDI)]<-0.21 app_train$FLOORSMAX_MEDI[is.na(app_train$FLOORSMAX_MEDI)]<-0.17 app_train$NONLIVINGAREA_MODE[is.na(app_train$NONLIVINGAREA_MODE)]<-0 app_train$TARGET<-factor(app_train$TARGET)
+summary(app_train)
+previous_apporiginal <- read.csv("C:\\Users\\yd138\\Desktop\\NYU\\2019 Spring\\Bussiness Analytics\\Project2\\previous_application.csv",,header = T, stringsAsFactors = T) str(previous_apporiginal)
+previous_app<-previous_apporiginal[,c(2,4:8,10,12:15,18,27,32:37)]
+#clean the previous application and select the variables
+summary(previous_app) previous_app$HOUR_APPR_PROCESS_START[is.na(previous_app$HOUR_APPR_PROCESS_ST
+
+ART)]<-12 previous_app$RATE_DOWN_PAYMENT[is.na(previous_app$RATE_DOWN_PAYMENT)]<-0.1 previous_app$RATE_DOWN_PAYMENT[is.na(previous_app$RATE_DOWN_PAYMENT)]<-0.1 previous_app<-previous_app[,- which(names(previous_app)=="NFLAG_INSURED_ON_APPROVAL")] previous_app<-previous_app[,-which(names(previous_app)=="DAYS_TERMINATION")] previous_app<-previous_app[,-which(names(previous_app)=="DAYS_LAST_DUE")] previous_app<-previous_app[,- which(names(previous_app)=="DAYS_LAST_DUE_1ST_VERSION")] previous_app<-previous_app[,-which(names(previous_app)=="DAYS_FIRST_DUE")] previous_app<-previous_app[,-which(names(previous_app)=="DAYS_FIRST_DRAWING")] previous_app<-previous_app[,- which(names(previous_app)=="RATE_INTEREST_PRIVILEGED")] previous_app<-previous_app[,-which(names(previous_app)=="RATE_INTEREST_PRIMARY")] previous_app$AMT_GOODS_PRICE[is.na(previous_app$AMT_GOODS_PRICE)]<-227847 previous_app$AMT_DOWN_PAYMENT[is.na(previous_app$AMT_DOWN_PAYMENT)]<- 6697.4
+previous_app$AMT_CREDIT[is.na(previous_app$AMT_CREDIT)]<-196114 previous_app$AMT_ANNUITY[is.na(previous_app$AMT_ANNUITY)]<-15955
+#get the mean value of each ID
+HOUR_APPR_PROCESS_START<-
+aggregate(previous_app$HOUR_APPR_PROCESS_START ,by=list(previous_app$SK_ID_CURR) ,FUN=mean ) names(HOUR_APPR_PROCESS_START)[names(HOUR_APPR_PROCESS_START)=="x"]="HOU R_APPR_PROCESS_START"
+RATE_DOWN_PAYMENT<-
+aggregate(previous_app$RATE_DOWN_PAYMENT ,by=list(previous_app$SK_ID_CURR),FUN =mean ) names(RATE_DOWN_PAYMENT)[names(RATE_DOWN_PAYMENT)=="x"]="RATE_DOWN_PA YMENT"
+DAYS_DECISION<-
+aggregate(previous_app$DAYS_DECISION ,by=list(previous_app$SK_ID_CURR),FUN=mean ) names(DAYS_DECISION)[names(DAYS_DECISION)=="x"]="DAYS_DECISION" AMT_ANNUITY<-
+aggregate(previous_app$AMT_ANNUITY ,by=list(previous_app$SK_ID_CURR),FUN=mean ) names(AMT_ANNUITY)[names(AMT_ANNUITY)=="x"]="AMT_ANNUITY" AMT_APPLICATION<-
+aggregate(previous_app$AMT_APPLICATION ,by=list(previous_app$SK_ID_CURR),FUN=mea n)
+names(AMT_APPLICATION)[names(AMT_APPLICATION)=="x"]="AMT_APPLICATION" AMT_CREDIT<-
+aggregate(previous_app$AMT_CREDIT ,by=list(previous_app$SK_ID_CURR),FUN=mean ) names(AMT_CREDIT)[names(AMT_CREDIT)=="x"]="AMT_CREDIT"
+
+AMT_DOWN_PAYMENT<-
+aggregate(previous_app$AMT_DOWN_PAYMENT ,by=list(previous_app$SK_ID_CURR),FUN= mean ) names(AMT_DOWN_PAYMENT)[names(AMT_DOWN_PAYMENT)=="x"]="AMT_DOWN_PAY MENT"
+AMT_GOODS_PRICE<-
+aggregate(previous_app$AMT_GOODS_PRICE ,by=list(previous_app$SK_ID_CURR),FUN=me an )
+names(AMT_GOODS_PRICE)[names(AMT_GOODS_PRICE)=="x"]="AMT_GOODS_PRICE" NFLAG_LAST_APPL_IN_DAY<-
+aggregate(previous_app$NFLAG_LAST_APPL_IN_DAY ,by=list(previous_app$SK_ID_CURR),F UN=mean ) names(NFLAG_LAST_APPL_IN_DAY)[names(NFLAG_LAST_APPL_IN_DAY)=="x"]="NFLAG_LA ST_APPL_IN_DAY"
+SELLERPLACE_AREA<-
+aggregate(previous_app$SELLERPLACE_AREA ,by=list(previous_app$SK_ID_CURR),FUN=me an )
+names(SELLERPLACE_AREA)[names(SELLERPLACE_AREA)=="x"]="SELLERPLACE_AREA" a<-merge(HOUR_APPR_PROCESS_START,RATE_DOWN_PAYMENT, by = c("Group.1"), all = T) a<-merge(a,DAYS_DECISION, by = c("Group.1"), all = T)
+a<-merge(a,AMT_ANNUITY, by = c("Group.1"), all = T)
+a<-merge(a,AMT_APPLICATION, by = c("Group.1"), all = T)
+a<-merge(a,AMT_CREDIT, by = c("Group.1"), all = T)
+a<-merge(a,AMT_DOWN_PAYMENT, by = c("Group.1"), all = T) a<-merge(a,AMT_GOODS_PRICE, by = c("Group.1"), all = T) a<-merge(a,NFLAG_LAST_APPL_IN_DAY, by = c("Group.1"), all = T) a<-merge(a,SELLERPLACE_AREA, by = c("Group.1"), all = T) names(a)[names(a)=="Group.1"]="SK_ID_CURR"
+join_previousapp<-a
+data_join<- left_join(app_train,join_previousapp, by = c("SK_ID_CURR"))
+#clean the credit data
+credit_card_balance <- read.csv("C:\\Users\\yd138\\Desktop\\NYU\\2019 Spring\\Bussiness Analytics\\Project2\\credit_card_balance.csv",,header = T, stringsAsFactors = T) names(credit_card_balance)
+credit_card_balance<-credit_card_balance[,- which(names(credit_card_balance)=="SK_ID_PREV")] credit_card_balance<-credit_card_balance[,- which(names(credit_card_balance)=="NAME_CONTRACT_STATUS")] credit_card_balance<-credit_card_balance[,- which(names(credit_card_balance)=="AMT_DRAWINGS_ATM_CURRENT")] credit_card_balance<-credit_card_balance[,- which(names(credit_card_balance)=="AMT_DRAWINGS_OTHER_CURRENT")]
+
+credit_card_balance<-credit_card_balance[,- which(names(credit_card_balance)=="AMT_PAYMENT_CURRENT")] credit_card_balance<-credit_card_balance[,- which(names(credit_card_balance)=="CNT_DRAWINGS_ATM_CURRENT")] credit_card_balance<-credit_card_balance[,- which(names(credit_card_balance)=="CNT_DRAWINGS_OTHER_CURRENT")] credit_card_balance<-credit_card_balance[,- which(names(credit_card_balance)=="CNT_DRAWINGS_POS_CURRENT")] credit_card_balance<-credit_card_balance[,- which(names(credit_card_balance)=="AMT_DRAWINGS_POS_CURRENT")] summary(credit_card_balance) credit_card_balance$AMT_INST_MIN_REGULARITY[is.na(credit_card_balance$AMT_INST_MI N_REGULARITY)]<- 3540 credit_card_balance$CNT_INSTALMENT_MATURE_CUM[is.na(credit_card_balance$CNT_INST ALMENT_MATURE_CUM)]<- 20.83
+#get the mean value of each ID
+names(credit_card_balance)
+MONTHS_BALANCE<-
+aggregate(credit_card_balance$MONTHS_BALANCE ,by=list(credit_card_balance$SK_ID_CU RR),FUN=mean ) names(MONTHS_BALANCE)[names(MONTHS_BALANCE)=="x"]="MONTHS_BALANCE" AMT_BALANCE<-
+aggregate(credit_card_balance$AMT_BALANCE ,by=list(credit_card_balance$SK_ID_CURR),F UN=mean )
+names(AMT_BALANCE)[names(AMT_BALANCE)=="x"]="AMT_BALANCE" AMT_CREDIT_LIMIT_ACTUAL<- aggregate(credit_card_balance$AMT_CREDIT_LIMIT_ACTUAL ,by=list(credit_card_balance$S K_ID_CURR),FUN=mean ) names(AMT_CREDIT_LIMIT_ACTUAL)[names(AMT_CREDIT_LIMIT_ACTUAL)=="x"]="AMT_CR EDIT_LIMIT_ACTUAL"
+AMT_DRAWINGS_CURRENT<-
+aggregate(credit_card_balance$AMT_DRAWINGS_CURRENT ,by=list(credit_card_balance$SK _ID_CURR),FUN=mean ) names(AMT_DRAWINGS_CURRENT)[names(AMT_DRAWINGS_CURRENT)=="x"]="AMT_DRA WINGS_CURRENT"
+AMT_INST_MIN_REGULARITY<- aggregate(credit_card_balance$AMT_INST_MIN_REGULARITY ,by=list(credit_card_balance$S K_ID_CURR),FUN=mean ) names(AMT_INST_MIN_REGULARITY)[names(AMT_INST_MIN_REGULARITY)=="x"]="AMT_IN ST_MIN_REGULARITY"
+AMT_PAYMENT_TOTAL_CURRENT<-
+
+aggregate(credit_card_balance$AMT_PAYMENT_TOTAL_CURRENT ,by=list(credit_card_balan ce$SK_ID_CURR),FUN=mean ) names(AMT_PAYMENT_TOTAL_CURRENT)[names(AMT_PAYMENT_TOTAL_CURRENT)=="x"] ="AMT_PAYMENT_TOTAL_CURRENT"
+AMT_RECEIVABLE_PRINCIPAL<- aggregate(credit_card_balance$AMT_RECEIVABLE_PRINCIPAL ,by=list(credit_card_balance$S K_ID_CURR),FUN=mean ) names(AMT_RECEIVABLE_PRINCIPAL)[names(AMT_RECEIVABLE_PRINCIPAL)=="x"]="AMT_R ECEIVABLE_PRINCIPAL"
+AMT_RECIVABLE<-
+aggregate(credit_card_balance$AMT_RECIVABLE ,by=list(credit_card_balance$SK_ID_CURR), FUN=mean )
+names(AMT_RECIVABLE)[names(AMT_RECIVABLE)=="x"]="AMT_RECIVABLE" AMT_TOTAL_RECEIVABLE<-
+aggregate(credit_card_balance$AMT_TOTAL_RECEIVABLE ,by=list(credit_card_balance$SK_I D_CURR),FUN=mean ) names(AMT_TOTAL_RECEIVABLE)[names(AMT_TOTAL_RECEIVABLE)=="x"]="AMT_TOTAL_R ECEIVABLE"
+CNT_DRAWINGS_CURRENT<-
+aggregate(credit_card_balance$CNT_DRAWINGS_CURRENT ,by=list(credit_card_balance$SK _ID_CURR),FUN=mean ) names(CNT_DRAWINGS_CURRENT)[names(CNT_DRAWINGS_CURRENT)=="x"]="CNT_DRA WINGS_CURRENT"
+CNT_INSTALMENT_MATURE_CUM<- aggregate(credit_card_balance$CNT_INSTALMENT_MATURE_CUM ,by=list(credit_card_balan ce$SK_ID_CURR),FUN=mean ) names(CNT_INSTALMENT_MATURE_CUM)[names(CNT_INSTALMENT_MATURE_CUM)=="x"] ="CNT_INSTALMENT_MATURE_CUM"
+SK_DPD<-
+aggregate(credit_card_balance$SK_DPD ,by=list(credit_card_balance$SK_ID_CURR),FUN=me an )
+names(SK_DPD)[names(SK_DPD)=="x"]="SK_DPD"
+SK_DPD_DEF<-
+aggregate(credit_card_balance$SK_DPD_DEF ,by=list(credit_card_balance$SK_ID_CURR),FUN =mean )
+names(SK_DPD_DEF)[names(SK_DPD_DEF)=="x"]="SK_DPD_DEF" b<-merge(MONTHS_BALANCE,AMT_BALANCE, by = c("Group.1"), all = T) b<-merge(b,AMT_CREDIT_LIMIT_ACTUAL, by = c("Group.1"), all = T) b<-merge(b,AMT_DRAWINGS_CURRENT, by = c("Group.1"), all = T) b<-merge(b,AMT_INST_MIN_REGULARITY, by = c("Group.1"), all = T) b<-merge(b,AMT_PAYMENT_TOTAL_CURRENT, by = c("Group.1"), all = T) b<-merge(b,AMT_RECEIVABLE_PRINCIPAL, by = c("Group.1"), all = T) b<-merge(b,AMT_RECIVABLE, by = c("Group.1"), all = T) b<-merge(b,AMT_TOTAL_RECEIVABLE, by = c("Group.1"), all = T)
+
+b<-merge(b,CNT_DRAWINGS_CURRENT, by = c("Group.1"), all = T) b<-merge(b,CNT_INSTALMENT_MATURE_CUM, by = c("Group.1"), all = T) b<-merge(b,SK_DPD, by = c("Group.1"), all = T) b<-merge(b,SK_DPD_DEF, by = c("Group.1"), all = T) names(b)[names(b)=="Group.1"]="SK_ID_CURR"
+join_credit<-b
+data_join3<- left_join(data_join,join_credit, by = c("SK_ID_CURR"))
+write.csv(data_join3, file="C:\\Users\\yd138\\Desktop\\NYU\\2019 Spring\\Bussiness Analytics\\Project2\\joindata_nonclean.csv")
+summary(data_join2)
+#keep the NAs in join_data equal 0 data_join2$HOUR_APPR_PROCESS_START[is.na(data_join2$HOUR_APPR_PROCESS_START)] <-0
+data_join2$RATE_DOWN_PAYMENT[is.na(data_join2$RATE_DOWN_PAYMENT)]<-0 data_join2$DAYS_DECISION[is.na(data_join2$DAYS_DECISION)]<-0 data_join2$AMT_APPLICATION[is.na(data_join2$AMT_APPLICATION)]<-0 data_join2$AMT_CREDIT.y[is.na(data_join2$AMT_CREDIT.y)]<-0 data_join2$AMT_DOWN_PAYMENT[is.na(data_join2$AMT_DOWN_PAYMENT)]<-0 data_join2$NFLAG_LAST_APPL_IN_DAY[is.na(data_join2$NFLAG_LAST_APPL_IN_DAY)]<-0 data_join2$SELLERPLACE_AREA[is.na(data_join2$SELLERPLACE_AREA)]<-0 data_join2$MONTHS_BALANCE[is.na(data_join2$MONTHS_BALANCE)]<-0 data_join2$AMT_BALANCE[is.na(data_join2$AMT_BALANCE)]<-0 data_join2$AMT_CREDIT_LIMIT_ACTUAL[is.na(data_join2$AMT_CREDIT_LIMIT_ACTUAL)]<-0 data_join2$AMT_DRAWINGS_CURRENT[is.na(data_join2$AMT_DRAWINGS_CURRENT)]<-0 data_join2$AMT_INST_MIN_REGULARITY[is.na(data_join2$AMT_INST_MIN_REGULARITY)]<- 0 data_join2$AMT_PAYMENT_TOTAL_CURRENT[is.na(data_join2$AMT_PAYMENT_TOTAL_CUR RENT)]<-0 data_join2$AMT_RECEIVABLE_PRINCIPAL[is.na(data_join2$AMT_RECEIVABLE_PRINCIPAL)]<- 0
+data_join2$AMT_RECIVABLE[is.na(data_join2$AMT_RECIVABLE)]<-0 data_join2$AMT_TOTAL_RECEIVABLE[is.na(data_join2$AMT_TOTAL_RECEIVABLE)]<-0 data_join2$CNT_DRAWINGS_CURRENT[is.na(data_join2$CNT_DRAWINGS_CURRENT)]<-0 data_join2$CNT_INSTALMENT_MATURE_CUM[is.na(data_join2$CNT_INSTALMENT_MATURE _CUM)]<-0
+data_join2$SK_DPD[is.na(data_join2$SK_DPD)]<-0 data_join2$SK_DPD_DEF[is.na(data_join2$SK_DPD_DEF)]<-0
+summary(data_join2)
+str(data_join2)
+k<- data.frame(data_join2$AMT_ANNUITY.x,data_join2$AMT_ANNUITY.y,data_join2$AMT_CRED IT.x,data_join2$AMT_CREDIT.y,data_join2$AMT_GOODS_PRICE.x,data_join2$AMT_GOODS_P RICE.y)
+
+data_join2$AMT_GOODS_PRICE.y[is.na(data_join2$AMT_GOODS_PRICE.y)]<-0 data_join2$AMT_ANNUITY.y[is.na(data_join2$AMT_ANNUITY.y)]<-0 names(data_join2)[names(data_join2)=="AMT_ANNUITY.y"]="AMT_ANNUITY.credit" names(data_join2)[names(data_join2)=="AMT_GOODS_PRICE.y"]="AMT_GOODS_PRICE.cred it"
+names(data_join2)[names(data_join2)=="AMT_CREDIT.y"]="AMT_CREDIT.credit" write.csv(data_join2, file="C:\\Users\\yd138\\Desktop\\NYU\\2019 Spring\\Bussiness Analytics\\Project2\\joindata_clean.csv")
+application_train <- read.csv("/Users/apple/Downloads/application_train.csv",header = T, stringsAsFactors = T)
+app_train<- application_train[,c(1,2,3,4,5,6,8:11,14,15,17:22,24,25,27,29,30,32,35:38,42:44,72,80,81,84,86,9 0,95,96,97,98,100,101,103,104,106,108:113,116,118,120,122)] app_train$AMT_ANNUITY[is.na(app_train$AMT_ANNUITY)]<- 24917 app_train$AMT_GOODS_PRICE[is.na(app_train$AMT_GOODS_PRICE)]<- 450000 app_train$OWN_CAR_AGE[is.na(app_train$OWN_CAR_AGE)]<- 9 app_train$CNT_FAM_MEMBERS[is.na(app_train$CNT_FAM_MEMBERS)]<- 2.000 app_train$EXT_SOURCE_1[is.na(app_train$EXT_SOURCE_1)]<- 0.51 app_train$EXT_SOURCE_2[is.na(app_train$EXT_SOURCE_2)]<- 0.5661 app_train$EXT_SOURCE_3[is.na(app_train$EXT_SOURCE_3)]<- 0.54 app_train$AMT_REQ_CREDIT_BUREAU_YEAR[is.na(app_train$AMT_REQ_CREDIT_BUREAU_YE AR)]<-1.0 app_train$AMT_REQ_CREDIT_BUREAU_MON[is.na(app_train$AMT_REQ_CREDIT_BUREAU_M ON)]<-0 app_train$AMT_REQ_CREDIT_BUREAU_DAY[is.na(app_train$AMT_REQ_CREDIT_BUREAU_DA Y)]<-0 app_train$DAYS_LAST_PHONE_CHANGE[is.na(app_train$DAYS_LAST_PHONE_CHANGE)]<-- 757.0 app_train$DEF_60_CNT_SOCIAL_CIRCLE[is.na(app_train$DEF_60_CNT_SOCIAL_CIRCLE)]<-0 app_train$NONLIVINGAREA_MEDI[is.na(app_train$NONLIVINGAREA_MEDI)]<-0 app_train$LIVINGAREA_MEDI[is.na(app_train$LIVINGAREA_MEDI)]<-0.07 app_train$FLOORSMIN_MEDI[is.na(app_train$FLOORSMIN_MEDI)]<-0.21 app_train$FLOORSMAX_MEDI[is.na(app_train$FLOORSMAX_MEDI)]<-0.17 app_train$NONLIVINGAREA_MODE[is.na(app_train$NONLIVINGAREA_MODE)]<-0 app_train$TARGET<-factor(app_train$TARGET)
+summary(app_train)
+previous_apporiginal <- read.csv("/Users/apple/Downloads/previous_application.csv",header = T, stringsAsFactors = T)
+library("plyr")
+library("dplyr")
+data_join<- left_join(app_train,join_previousapp, by = c("SK_ID_CURR"))
+
+#clean the credit data
+credit_card_balance <- read.csv("/Users/apple/Downloads/credit_card_balance.csv",,header = T, stringsAsFactors = T)
+write.csv(data_join3, file="/Users/apple/Downloads/joindata_nonclean.csv") write.csv(data_join2, file="/Users/apple/Downloads/joindata_clean.csv")
+scoringdata<- read.csv("/Users/apple/Downloads/new_records_for_scoring.csv",header = T, stringsAsFactors = T)
+scoringdata$AMT_ANNUITY[is.na(scoringdata$AMT_ANNUITY)]<- 27128 scoringdata$AMT_GOODS_PRICE[is.na(scoringdata$AMT_GOODS_PRICE)]<- 536716 scoringdata$EXT_SOURCE_1[is.na(scoringdata$EXT_SOURCE_1)]<- 0.5 scoringdata$OWN_CAR_AGE[is.na(scoringdata$OWN_CAR_AGE)]<- 12.07 scoringdata$EXT_SOURCE_2[is.na(scoringdata$EXT_SOURCE_2)]<- 0.5139 scoringdata$EXT_SOURCE_3[is.na(scoringdata$EXT_SOURCE_3)]<- 0.509 scoringdata$NONLIVINGAREA_MODE[is.na(scoringdata$NONLIVINGAREA_MODE)]<- 0.03 scoringdata$FLOORSMAX_MEDI[is.na(scoringdata$AMT_ANNUITY)]<- 0.226 scoringdata$FLOORSMIN_MEDI[is.na(scoringdata$FLOORSMIN_MEDI)]<- 0.23 scoringdata$LIVINGAREA_MEDI[is.na(scoringdata$LIVINGAREA_MEDI)]<- 0.109 scoringdata$NONLIVINGAREA_MEDI[is.na(scoringdata$NONLIVINGAREA_MEDI)]<- 0.03 scoringdata$DEF_60_CNT_SOCIAL_CIRCLE[is.na(scoringdata$DEF_60_CNT_SOCIAL_CIRCLE)] <- 0.09984 scoringdata$AMT_REQ_CREDIT_BUREAU_DAY[is.na(scoringdata$AMT_REQ_CREDIT_BUREA U_DAY)]<- 0.007 scoringdata$AMT_REQ_CREDIT_BUREAU_MON[is.na(scoringdata$AMT_REQ_CREDIT_BUREA U_MON)]<- 0.272 scoringdata$AMT_REQ_CREDIT_BUREAU_YEAR[is.na(scoringdata$AMT_REQ_CREDIT_BUREA U_YEAR)]<- 1.895 scoringdata$FLOORSMAX_MEDI[is.na(scoringdata$FLOORSMAX_MEDI)]<- 0.226 summary(scoringdata)
+scoringdata=scoringdata %>% mutate_if(is.character, as.factor) scoringdata$OCCUPATION_TYPE[scoringdata$OCCUPATION_TYPE==""]<-"Not Available" scoringdata$WALLSMATERIAL_MODE[scoringdata$WALLSMATERIAL_MODE==""]<-"Not Available"
+newscoringdata<- scoringdata[,c(1,2,3,4,5,6,8:11,14,15,17:22,24,25,27,29,30,32,35:38,42:44,72,80,81,84,86,90,95, 96,97,98,100,101,103,104,106,108:113,116,118,120,122)] scoringdata_join1<-left_join(newscoringdata,join_previousapp, by = c("SK_ID_CURR")) scoringdata_join2<-left_join(scoringdata_join1,join_credit, by = c("SK_ID_CURR")) write.csv(scoringdata_join2, file="/Users/apple/Downloads/scoringdata_join.csv")
+
+#do with the model
+joindata1<-read.csv(file = "C:\\Users\\yd138\\Desktop\\NYU\\2019 Spring\\Bussiness Analytics\\Project2\\joindata_clean.csv",header=TRUE,stringsAsFactors=TRUE)
+library(dplyr)
+joindata1=joindata1 %>% mutate_if(is.character, as.factor) joindata1$TARGET<-factor(joindata1$TARGET)
+summary(joindata1)
+joindata<-joindata1[,-which(names(joindata1)=="X")] joindata<-joindata[,-which(names(joindata)=="SK_ID_CURR")] prop.table(table(joindata$TARGET))
+#split for tran and test
+library(caTools)
+set.seed(1234)
+split = sample.split(joindata$TARGET, SplitRatio = 2/3) train = subset(joindata, split==TRUE)
+test = subset(joindata, split==FALSE)
+#umbalance
+library(ROSE)
+train.over<-ovun.sample(TARGET~., data = train, method = "over")$data prop.table(table(train.over$TARGET))
+#split again
+library(randomForest)
+split2<-(.1)
+trainingRowIndex <- sample(1:nrow(train.over),(split2)*nrow(train.over)) trainingData <- train.over[trainingRowIndex, ] prop.table(table(trainingData$TARGET))
+split3<-(.3)
+trainingRowIndex2 <- sample(1:nrow(train.over),(split3)*nrow(train.over)) trainingData2 <- train.over[trainingRowIndex2, ] prop.table(table(trainingData2$TARGET))
+#tune the model for 10%
+n <- length(names(trainingData)) set.seed(1234)
+errRate <- c(1)
+for (i in 1:(n-1)){
+model <- randomForest(TARGET~., data = trainingData, mtry = i) err <- mean(model$err.rate)
+errRate[i] <- err
+}
+m= which.min(errRate)
+
+print(m)
+set.seed(1234)
+rf_ntree <- randomForest(TARGET~., data = trainingData, mtry = 7 ,ntree=5000) plot(rf_ntree)
+#tune the model for 30%
+n <- length(names(trainingData2)) set.seed(1234)
+errRate <- c(1)
+for (i in 1:(n-1)){
+model <- randomForest(TARGET~., data = trainingData2, mtry = i) err <- mean(model$err.rate)
+errRate[i] <- err
+}
+m= which.min(errRate)
+print(m)
+set.seed(1234)
+memory.limit(1000000)
+rf_ntree2 <- randomForest(TARGET~., data = trainingData2, mtry = 5 ,ntree=3000) plot(rf_ntree2)
+#model_0.1tune
+rf_tune0.1<-randomForest(TARGET~., data = trainingData, mtry = 7 ,ntree=1000) prediction1<-predict(rf_tune0.1, test, type='response')
+library(caret)
+confusionMatrix(prediction1, test$TARGET,positive = "1", mode="everything") importance(rf_tune0.1)
+varImpPlot(rf_tune0.1)
+#model_0.3tune
+rf_tune0.3<-randomForest(TARGET~., data = trainingData2, mtry = 5 ,ntree=500) prediction2<-predict(rf_tune0.3, test, type='response')
+library(caret)
+confusionMatrix(prediction2, test$TARGET,positive = "1", mode="everything")
+#predict the new record data
+scoring_join1<-read.csv(file = "C:\\Users\\yd138\\Desktop\\NYU\\2019 Spring\\Bussiness Analytics\\Project2\\scoringdata_join.csv",header=TRUE,stringsAsFactors=FALSE) summary(scoring_join1)
+#keep the NAs in join_data equal 0 scoring_join1$HOUR_APPR_PROCESS_START[is.na(scoring_join1$HOUR_APPR_PROCESS_ST ART)]<-0 scoring_join1$RATE_DOWN_PAYMENT[is.na(scoring_join1$RATE_DOWN_PAYMENT)]<-0
+
+scoring_join1$DAYS_DECISION[is.na(scoring_join1$DAYS_DECISION)]<-0 scoring_join1$AMT_APPLICATION[is.na(scoring_join1$AMT_APPLICATION)]<-0 scoring_join1$AMT_CREDIT.y[is.na(scoring_join1$AMT_CREDIT.y)]<-0 scoring_join1$AMT_DOWN_PAYMENT[is.na(scoring_join1$AMT_DOWN_PAYMENT)]<-0 scoring_join1$NFLAG_LAST_APPL_IN_DAY[is.na(scoring_join1$NFLAG_LAST_APPL_IN_DAY)] <-0
+scoring_join1$SELLERPLACE_AREA[is.na(scoring_join1$SELLERPLACE_AREA)]<-0 scoring_join1$MONTHS_BALANCE[is.na(scoring_join1$MONTHS_BALANCE)]<-0 scoring_join1$AMT_CREDIT_LIMIT_ACTUAL[is.na(scoring_join1$AMT_CREDIT_LIMIT_ACTUAL )]<-0 scoring_join1$AMT_DRAWINGS_CURRENT[is.na(scoring_join1$AMT_DRAWINGS_CURRENT)] <-0 scoring_join1$AMT_INST_MIN_REGULARITY[is.na(scoring_join1$AMT_INST_MIN_REGULARIT Y)]<-0 scoring_join1$AMT_PAYMENT_TOTAL_CURRENT[is.na(scoring_join1$AMT_PAYMENT_TOTA L_CURRENT)]<-0 scoring_join1$AMT_RECEIVABLE_PRINCIPAL[is.na(scoring_join1$AMT_RECEIVABLE_PRINCIP AL)]<-0
+scoring_join1$AMT_RECIVABLE[is.na(scoring_join1$AMT_RECIVABLE)]<-0 scoring_join1$AMT_TOTAL_RECEIVABLE[is.na(scoring_join1$AMT_TOTAL_RECEIVABLE)]<-0 scoring_join1$CNT_DRAWINGS_CURRENT[is.na(scoring_join1$CNT_DRAWINGS_CURRENT)] <-0 scoring_join1$CNT_INSTALMENT_MATURE_CUM[is.na(scoring_join1$CNT_INSTALMENT_MA TURE_CUM)]<-0
+scoring_join1$SK_DPD[is.na(scoring_join1$SK_DPD)]<-0 scoring_join1$SK_DPD_DEF[is.na(scoring_join1$SK_DPD_DEF)]<-0 scoring_join1$AMT_BALANCE[is.na(scoring_join1$AMT_BALANCE)]<-0 scoring_join1$AMT_GOODS_PRICE.y[is.na(scoring_join1$AMT_GOODS_PRICE.y)]<-0 scoring_join1$AMT_ANNUITY.y[is.na(scoring_join1$AMT_ANNUITY.y)]<-0 names(scoring_join1)[names(scoring_join1)=="AMT_ANNUITY.y"]="AMT_ANNUITY.credit" names(scoring_join1)[names(scoring_join1)=="AMT_GOODS_PRICE.y"]="AMT_GOODS_PRIC E.credit" names(scoring_join1)[names(scoring_join1)=="AMT_CREDIT.y"]="AMT_CREDIT.credit" library(dplyr)
+scoring_join1=scoring_join1 %>% mutate_if(is.character, as.factor) scoring_join1$TARGET<-factor(scoring_join1$TARGET) scoring_join<-scoring_join1[,-which(names(scoring_join1)=="X")] scoring_join<-scoring_join[,-which(names(scoring_join)=="SK_ID_CURR")] str(scoring_join)
+str(train.over) scoring_join$DAYS_REGISTRATION<-as.numeric(scoring_join$DAYS_REGISTRATION) scoring_join$OWN_CAR_AGE<-as.integer(scoring_join$OWN_CAR_AGE) scoring_join$DEF_60_CNT_SOCIAL_CIRCLE<- as.integer(scoring_join$DEF_60_CNT_SOCIAL_CIRCLE)
+
+scoring_join$AMT_REQ_CREDIT_BUREAU_DAY<- as.integer(scoring_join$AMT_REQ_CREDIT_BUREAU_DAY) scoring_join$AMT_REQ_CREDIT_BUREAU_MON<- as.integer(scoring_join$AMT_REQ_CREDIT_BUREAU_MON) scoring_join$AMT_REQ_CREDIT_BUREAU_YEAR<- as.integer(scoring_join$AMT_REQ_CREDIT_BUREAU_YEAR) scoring_join$TARGET<-1
+scoring_join$TARGET[1]<-0 scoring_join$TARGET<-factor(scoring_join$TARGET)
+#prediction for new record with two models
+pre_jointune0.1<-predict(rf_tune0.1, scoring_join, type='response') pre_jointune0.3<-predict(rf_tune0.3, scoring_join, type='response') sample_submission_rftune0.1<- data.frame(SK_ID_CURR=scoring_join1$SK_ID_CURR,TARGET=pre_jointune0.1) table(sample_submission_rftune0.1$TARGET)
+sample_submission_rftune0.3<- data.frame(SK_ID_CURR=scoring_join1$SK_ID_CURR,TARGET=pre_jointune0.3) write.csv(sample_submission_rftune0.1, file="C:\\Users\\yd138\\Desktop\\NYU\\2019 Spring\\Bussiness Analytics\\Project2\\sample_submission_rftune0.1.csv") write.csv(sample_submission_rftune0.3, file="C:\\Users\\yd138\\Desktop\\NYU\\2019 Spring\\Bussiness Analytics\\Project2\\sample_submission_rftune0.3.csv")
