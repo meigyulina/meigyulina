@@ -1,0 +1,89 @@
+url<-"https://raw.githubusercontent.com/jcbonilla/BusinessAnalytics/master/BAData/JC-201709-citibike-tripdata.csv"
+data<-read.csv(url,header=TRUE,stringsAsFactors = FALSE)
+data
+
+#Analytics Questions
+#1. Compute summary statistics for tripduration
+mean(data$tripduration)  
+var(data$tripduration)  
+sd(data$tripduration)  
+min(data$tripduration)  
+max(data$tripduration)  
+median(data$tripduration)  
+quantile(data$tripduration) 
+range<-max(data$tripduration) -  min(data$tripduration)
+range
+
+
+summary(data$tripduration)
+
+#2. Compute summary statistics for age
+age<-2019-as.numeric(data$birth.year)
+age
+data.2<-cbind(data,age) 
+
+mean(data.2$age,na.rm = TRUE)  
+var(data.2$age,na.rm = TRUE)  
+sd(data.2$age,na.rm = TRUE)  
+min(data.2$age,na.rm = TRUE)  
+max(data.2$age,na.rm = TRUE)  
+median(data.2$age,na.rm = TRUE)  
+quantile(data.2$age,na.rm = TRUE)  
+range<- max(data.2$age,na.rm = TRUE) - min(data.2$age,na.rm = TRUE)  
+range
+summary(data.2$age,na.rm = TRUE)
+
+#3. Compute summary statistics for tripduration in minutes (Need to transform tripduration from seconds to minutes)
+tripduration_minute<-as.numeric(data$tripduration) /60
+tripduration_minute
+data.3<-cbind(data.2,tripduration_minute)
+
+mean(data.3$tripduration_minute,na.rm = TRUE)  
+var(data.3$tripduration_minute,na.rm = TRUE)  
+sd(data.3$tripduration_minute,na.rm = TRUE)  
+min(data.3$tripduration_minute,na.rm = TRUE)  
+max(data.3$tripduration_minute,na.rm = TRUE)  
+median(data.3$tripduration_minute,na.rm = TRUE)  
+quantile(data.3$tripduration_minute,na.rm = TRUE)  
+range<- max(data.3$tripduration_minute,na.rm = TRUE) - min(data.3$tripduration_minute,na.rm = TRUE)  
+range
+summary(data.3$tripduration_minute,na.rm = TRUE)
+
+
+#4. Compute the correlation between age and tripduration
+data.4<-data.frame(data.3$age,data.3$tripduration_minute)
+data.4
+na_remove<-na.omit(data.4)
+cor(na_remove,y=NULL)
+
+# Business Questions
+#1. What is the total revenue assuming all users riding bikes from 0 to 45 minutes pay $3 per ride and user exceeding 45 minutes pay an additional $2 per ride.
+zero_until45<-subset(data.3,tripduration_minute<=45)
+more_than45<-subset(data.3,tripduration_minute>45)
+
+help(sum)
+revenue1<-32472*3
+revenue1
+revenue2<-647*5
+revenue2
+
+total_rev<-revenue1+revenue2
+total_rev
+
+#2.Looking at tripduration in minutes, what can you say about the variance in the data.
+var(data.3$tripduration_minute)
+sd(data.3$tripduration_minute)
+mean(data.3$tripduration_minute)
+
+#3. What does this mean for the pricing strategy?
+#more than 15 cost more since the average is 12
+
+#4. What does this mean for inventory availability?
+library(dplyr)
+inventory<-aggregate(data$start.station.name,list(data$start.station.name),length)
+inventory
+inv<-data.frame(sort(inventory$x,decreasing=TRUE))
+inv
+
+subscriber<-subset(data.3,usertype == "Subscriber")
+subscriber
