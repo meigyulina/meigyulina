@@ -1,0 +1,50 @@
+#Problem1
+getwd()
+setwd("/Users/meigysaviraulina/Downloads")
+getwd()
+data<- read.csv("/Users/meigysaviraulina/Downloads/Bicyling World Problem.csv", header=TRUE,stringsAsFactors=FALSE)
+
+lm(Price~Weightb,data=data)
+model1<-lm(Price~Weightb,data=data)
+summary(model1)
+plot(data$Weightb,data$Price,main="Scatter",xlab="Weight",ylab="Price")
+
+help(lm)
+
+#Problem2
+getwd()
+setwd("/Users/meigysaviraulina/Downloads")
+getwd()
+data2<- read.csv("/Users/meigysaviraulina/Downloads/Assembly Line Problem.csv", header=TRUE,stringsAsFactors=FALSE)
+
+lm(Number.of.Defective~Line.Speed,data=data2)
+model2<-lm(Number.of.Defective~Line.Speed,data=data2)
+summary(model2)
+plot(data2$Line.Speed,data2$Number.of.Defective,main="Scatter Plot",xlab="Line Speed",ylab="Number of Defective")
+
+#Problem3
+getwd()
+setwd("/Users/meigysaviraulina/Downloads")
+getwd()
+data3<- read.csv("/Users/meigysaviraulina/Downloads/Jensen Auto Problem.csv", header=TRUE,stringsAsFactors=FALSE)
+
+lm(Annual.Maintenance~Weekly.Usage,data=data3)
+model3<-lm(Annual.Maintenance~Weekly.Usage,data=data3)
+summary(model3)
+plot(data3$Weekly.Usage,data3$Annual.Maintenance,main="Scatter Plot",xlab="Weekly Usage",ylab="Annual Maintenance")
+
+
+#Problem4
+getwd()
+setwd("/Users/meigysaviraulina/Downloads")
+getwd()
+data4<- read.csv("/Users/meigysaviraulina/Downloads/Toyota.csv", header=TRUE,stringsAsFactors=FALSE)
+
+lm(Price~Miles,data=data4)
+model4<-lm(Price~Miles,data=data4)
+summary(model4)
+plot(data4$Miles,data4$Price,main="Scatter Plot",xlab="Miles",ylab="Price")
+
+predicted_price<-(-0.05887*(data4$Miles))+16.46976
+residual<-data4$Price-predicted_price
+data_final<-data.frame(data4$Miles,data4$Price,predicted_price,residual)
